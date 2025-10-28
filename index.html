@@ -80,6 +80,18 @@
     .coin[data-val="100"]{ background:#ef4444; color:#fff; }
 
     .receiver.dragover{ outline:2px dashed #34d399; background:#1e293b; }
+    /* Footer styles */
+    footer.site-footer{
+      width:95%; margin:12px auto 0; color:#94a3b8; font-size:13px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:8px 12px; border-radius:8px;
+      background:linear-gradient(180deg, rgba(15,23,42,0.6), rgba(11,19,36,0.6));
+      border:1px solid rgba(148,163,184,0.06);
+    }
+    footer.site-footer .left, footer.site-footer .right{ display:flex; gap:12px; align-items:center; }
+    footer.site-footer a{ color:#9ca3af; text-decoration:none; }
+    footer.site-footer a:hover{ color:#fff; text-decoration:underline; }
+    footer.site-footer .muted{ color:#6b7280; font-size:12px; }
   </style>
 </head>
 <body>
@@ -115,6 +127,42 @@
       </div>
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" id="siteFooter" role="contentinfo">
+    <div class="left">
+      <div class="copyright">© <span id="footerYear">2025</span> Romel. All rights reserved.</div>
+      <div class="muted">·</div>
+      <div class="muted">J&amp;J Vending</div>
+    </div>
+    <div class="right">
+      <nav aria-label="Footer Links">
+        <a href="#" id="termsLink">Terms</a>
+        <a href="#" id="privacyLink">Privacy</a>
+        <a href="#" id="contactLink">Contact</a>
+      </nav>
+      <div class="muted" id="contributors">Built by Romel</div>
+    </div>
+  </footer>
+
+  <script>
+    // Footer script: update year and optional contributors (customize later)
+    (function(){
+      const yearEl = document.getElementById('footerYear');
+      // static 2025 set per request; to use the current year uncomment below:
+      // yearEl.textContent = new Date().getFullYear();
+
+      const contributors = ['Romel'];
+      if (contributors.length > 0) {
+        document.getElementById('contributors').textContent = `Built by ${contributors.join(', ')}`;
+      }
+
+      // Example: replace placeholders with real links if provided
+      // document.getElementById('termsLink').href = '/terms';
+      // document.getElementById('privacyLink').href = '/privacy';
+      // document.getElementById('contactLink').href = 'mailto:you@example.com';
+    })();
+  </script>
 
 <script>
 (() => {
