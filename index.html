@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>J&J Vending</title>
+  <style>
+    body{
+      margin:0; font-family:sans-serif; background:#0f172a; color:#e5e7eb;
+      display:flex; justify-content:center; align-items:center; height:100vh;
+    }
+    .layout{
+      display:grid; grid-template-columns:1fr auto 1fr; gap:20px; width:95%; height:95vh;
+    }
+    .ads{
+      border:2px solid #1f2937; border-radius:10px; background:#0b1324; 
+      display:flex; flex-direction:column; justify-content:flex-start; align-items:center;
+      color:#94a3b8; font-size:18px; padding:10px; overflow:hidden; position:relative;
+    }
+    .ad-sequence{ position:relative; width:100%; height:100%; overflow:hidden; }
+    .ad-emoji{ position:absolute; top:-100%; left:50%; transform:translateX(-50%);
+      opacity:0; font-size:36px; line-height:1.6; text-align:center; animation:dropAd 16s linear infinite;
+    }
+    .ad-emoji small { font-size:12px; color:#ccc; display:block; margin-top:4px; }
+
+    .ad-emoji:nth-child(1){ animation-delay:0s; }
+    .ad-emoji:nth-child(2){ animation-delay:4s; }
+    .ad-emoji:nth-child(3){ animation-delay:8s; }
+    .ad-emoji:nth-child(4){ animation-delay:12s; }
+
+    @keyframes dropAd {
+      0%{ top:-120%; opacity:0; transform:translateX(-50%) scale(0.8); }
+      10%{ top:5%; opacity:1; transform:translateX(-50%) scale(1.1); }
+      40%{ top:35%; opacity:1; transform:translateX(-50%) scale(1); }
+      70%{ top:65%; opacity:1; transform:translateX(-50%) scale(1.05); }
+      90%{ top:120%; opacity:0; transform:translateX(-50%) scale(0.9); }
+      100%{ top:120%; opacity:0; }
+    }
+
+    .machine{
+      width:700px; height:100%; background:#111827; border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.5); display:grid; grid-template-columns:2fr 1fr;
+      overflow:hidden;
+    }
+    header{ grid-column:1/3; background:#1f2937; padding:12px; text-align:center; font-weight:bold;
+      font-size:22px; color:#0ff; text-transform:uppercase;
+      animation:ledSign 2s infinite; letter-spacing:2px;
+    }
+    @keyframes ledSign {
+      0%, 100% { text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff; color:#0ff; }
+      25% { text-shadow: 0 0 5px #ff0, 0 0 15px #ff0, 0 0 25px #ff0; color:#ff0; }
+      50% { text-shadow: 0 0 5px #f0f, 0 0 15px #f0f, 0 0 25px #f0f; color:#f0f; }
+      75% { text-shadow: 0 0 5px #f00, 0 0 15px #f00, 0 0 25px #f00; color:#f00; }
+    }
+
+    .items{ padding:12px; display:grid; grid-template-columns:1fr 1fr; gap:10px; overflow-y:auto; }
+    .item{ background:#1e293b; border-radius:10px; padding:8px; text-align:center; cursor:pointer; transition:transform .2s; }
+    .item:hover{ transform:scale(1.05); background:#243447; }
+    .item .emoji{ font-size:28px; }
+    .item .name{ font-size:13px; margin:4px 0; }
+    .item .price{ font-weight:bold; color:#34d399; }
+    .side{
+      border-left:2px solid #0a1322; display:flex; flex-direction:column;
+      justify-content:space-between; background:#0b1324; padding:10px;
+    }
+    .balance{ padding:10px; text-align:center; font-size:18px; background:#1f2937; border-radius:8px; margin-bottom:10px; }
+    .slot,.receiver{ background:#0a1322; padding:10px; text-align:center; min-height:120px; border-radius:8px; margin-bottom:10px; display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:8px; overflow:visible; }
+    .slot{ font-size:22px; }
+    .slot .dispense-emoji{ font-size:50px; display:block; margin-bottom:6px; width:100%; text-align:center; }
+
+    .coin-change{ width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; margin:5px; cursor:pointer; animation:drop 0.6s ease forwards; flex-shrink:0; }
+    @keyframes drop{ from{ transform:translateY(-60px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+
+    .coins{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; padding:10px; }
+    .coin{ width:50px; height:50px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold; cursor:grab; color:#111; }
+    .coin[data-val="1"]{ background:#facc15; }
+    .coin[data-val="5"]{ background:#d1d5db; }
+    .coin[data-val="10"]{ background:#9ca3af; }
+    .coin[data-val="50"]{ background:#f59e0b; }
+    .coin[data-val="100"]{ background:#ef4444; color:#fff; }
+
+    .receiver.dragover{ outline:2px dashed #34d399; background:#1e293b; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="ads">
+      <div class="ad-sequence">
+        <div class="ad-emoji">🥤 Coca-Cola<br><small>"Open Happiness, Anytime!"</small></div>
+        <div class="ad-emoji">☕ Mr. Brown Coffee<br><small>"Wake Up the Taiwanese Way!"</small></div>
+        <div class="ad-emoji">💧 Super Supau<br><small>"Hydration That Powers You!"</small></div>
+        <div class="ad-emoji">🍵 HeySong Tea<br><small>"A Sip of Tradition, A Taste of Joy."</small></div>
+      </div>
+    </div>
+
+    <div class="machine">
+      <header>J&J Vending</header>
+      <div class="items" id="items"></div>
+      <div class="side">
+        <div>
+          <div class="balance">Balance: <span id="balance">NT$0</span></div>
+          <div class="receiver" id="receiver">Drop Coins Here</div>
+          <div class="slot" id="dispense">—</div>
+        </div>
+        <div class="coins" id="coins"></div>
+      </div>
+    </div>
+
+    <div class="ads">
+      <div class="ad-sequence">
+        <div class="ad-emoji">🥛 Papaya Milk<br><small>"Sweet & Smooth Energy Boost!"</small></div>
+        <div class="ad-emoji">🍹 Fruit Juice<br><small>"Fresh Flavors, Every Bottle."</small></div>
+        <div class="ad-emoji">💦 Sparkling Water<br><small>"Fizz Up Your Day!"</small></div>
+        <div class="ad-emoji">🚰 Bottled Water<br><small>"Pure Refreshment, Always Near."</small></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const denominations = [1,5,10,50,100];
+  let balance = 0;
+  let items = [
+    { id: '1', name: 'Mr. Brown Coffee', price: 25, stock: 6, emoji: '☕' },
+    { id: '2', name: 'Super Supau', price: 20, stock: 6, emoji: '🥤' },
+    { id: '3', name: 'FIN (Isotonic)', price: 20, stock: 6, emoji: '💧' },
+    { id: '4', name: 'HeySong Tea/Soda', price: 20, stock: 6, emoji: '🍵' },
+    { id: '5', name: 'Papaya Milk', price: 25, stock: 6, emoji: '🥛' },
+    { id: '6', name: 'Coca-Cola (Small)', price: 20, stock: 6, emoji: '🥤' },
+    { id: '7', name: 'Plain Water', price: 15, stock: 6, emoji: '🚰' },
+    { id: '8', name: 'Sparkling Water', price: 20, stock: 6, emoji: '💦' },
+    { id: '9', name: 'Fruit Juice', price: 25, stock: 6, emoji: '🍹' },
+    { id: '10', name: 'Diet Soda', price: 20, stock: 6, emoji: '🥤' }
+  ];
+
+  const itemsWrap = document.getElementById('items');
+  const balanceEl = document.getElementById('balance');
+  const dispenseEl = document.getElementById('dispense');
+  const coinsWrap = document.getElementById('coins');
+  const receiver = document.getElementById('receiver');
+
+  const format = (n) => `NT$${n}`;
+  const updateBalance = () => { balanceEl.textContent = format(balance); };
+
+  const renderItems = () => {
+    itemsWrap.innerHTML = '';
+    items.forEach((p, idx) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `<div class=\"emoji\">${p.emoji}</div><div class=\"name\">${p.name}</div><div class=\"price\">${format(p.price)}</div>`;
+      div.addEventListener('click', () => vend(idx));
+      itemsWrap.appendChild(div);
+    });
+  };
+
+  const vend = (idx) => {
+    const p = items[idx];
+    if (!p || p.stock <= 0){ dispenseEl.textContent = 'Sold out'; return; }
+    if (balance < p.price){ dispenseEl.textContent = 'Insufficient funds'; return; }
+    balance -= p.price; p.stock -= 1; updateBalance();
+    dispenseEl.innerHTML = `<span class=\"dispense-emoji\">${p.emoji}</span>${p.name}`;
+
+    if (balance > 0){
+      dispenseChange(balance);
+      balance = 0; updateBalance();
+    }
+  };
+
+  const dispenseChange = (amount) => {
+    const coins = [100,50,10,5,1];
+    let left = amount;
+    for (let c of coins){
+      let count = Math.floor(left/c);
+      if(count>0){
+        for(let i=0;i<count;i++){
+          const coinEl = document.createElement('div');
+          coinEl.className = 'coin-change coin';
+          coinEl.textContent = `NT$${c}`;
+          coinEl.dataset.val = c;
+          if(c===1) coinEl.style.background="#facc15";
+          if(c===5) coinEl.style.background="#d1d5db";
+          if(c===10) coinEl.style.background="#9ca3af";
+          if(c===50) coinEl.style.background="#f59e0b";
+          if(c===100){ coinEl.style.background="#ef4444"; coinEl.style.color="#fff"; }
+          coinEl.addEventListener('click', ()=>coinEl.remove());
+          dispenseEl.appendChild(coinEl);
+        }
+        left -= count*c;
+      }
+    }
+  };
+
+  const renderCoins = () => {
+    denominations.forEach(v => {
+      const c = document.createElement('div');
+      c.className = 'coin';
+      c.textContent = `NT$${v}`;
+      c.dataset.val = v;
+      c.setAttribute('draggable','true');
+      c.addEventListener('dragstart', (e)=>{
+        e.dataTransfer.setData('value', v);
+      });
+      coinsWrap.appendChild(c);
+    });
+  };
+
+  receiver.addEventListener('dragover', (e)=>{
+    e.preventDefault();
+    receiver.classList.add('dragover');
+  });
+
+  receiver.addEventListener('dragleave', ()=>{
+    receiver.classList.remove('dragover');
+  });
+
+  receiver.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    receiver.classList.remove('dragover');
+    const val = parseInt(e.dataTransfer.getData('value'),10);
+    balance += val; updateBalance();
+    receiver.textContent = `Inserted: NT$${val}`;
+    setTimeout(()=>{receiver.textContent = 'Drop Coins Here';}, 1000);
+  });
+
+  renderItems();
+  renderCoins();
+})();
+</script>
+</body>
+</html>
